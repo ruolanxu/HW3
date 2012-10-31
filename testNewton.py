@@ -47,15 +47,6 @@ class TestNewton(unittest.TestCase):
         solver._maxiter = solver._maxiter - 1
         x1 = solver.solve(x0)
         self.assertAlmostEqual(x, x1)
-      
-    def testDfUsed(self):
-        # Test if Df is used in Newton
-        f = lambda x : 3.0 * x + 6.0
-        solver = newton.Newton(f, tol=1.e-7, maxiter=2)
-        x = solver.solve(2.0)
-        solver._Df = lambda x: 3.0 * x
-        x2 = solver.solve(2.0)
-        self.assertNotAlmostEqual(x, x2)
         
     @unittest.expectedFailure
     def testInfiniteCycle(self):

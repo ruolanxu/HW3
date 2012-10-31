@@ -27,10 +27,6 @@ class Newton(object):
             if N.linalg.norm(fx) < self._tol:
                 return x
             x = self.step(x, fx)
-        # Raise exception when it does not converge when maxiter is reached
-        if N.linalg.norm(fx) >= self._tol:
-            raise My_Exception("Nor converging when reaching maxiter = " + 
-                                str(self._maxiter))
         return x
 
     def step(self, x, fx=None):
@@ -40,14 +36,7 @@ class Newton(object):
             fx = self._f(x)
         if self._Df is None:
             Df_x = F.ApproximateJacobian(self._f, x, self._dx)
-            h = N.linalg.solve(N.matrix(Df_x), N.matrix(fx))
         else:
-            print 'Df read'
-            h = self._f(x) / self._Df(x)
-        
+            Df_x = self._Df
+        h = N.linalg.solve(N.matrix(Df_x), N.matrix(fx))
         return x - h
-
-# User-defined class for exceptions
-class My_Exception(Exception):
-    pass
-        
