@@ -14,16 +14,19 @@ class My_Exception(Exception):
     pass
     
 class Newton(object):
-    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, Df=None):
+    def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6, Df=None, r=None):
         """Return a new object to find roots of f(x) = 0 using Newton's method.
         tol:     tolerance for iteration (iterate until |f(x)| < tol)
         maxiter: maximum number of iterations to perform
-        dx:      step size for computing approximate Jacobian"""
+        dx:      step size for computing approximate Jacobian
+        Df:      analytical Jacobian
+        r:       tolerable radius ||x - x0||"""
         self._f = f
         self._tol = tol
         self._maxiter = maxiter
         self._dx = dx
         self._Df = Df
+        self._r = r
 
     def solve(self, x0):
         """Return a root of f(x) = 0, using Newton's method, starting from
@@ -34,11 +37,18 @@ class Newton(object):
             if N.linalg.norm(fx) < self._tol:
                 return x
             x = self.step(x, fx)
+            # Raise exception when radius is exceeded
+            try:
+                if self._r is not None and N.linalg.norm(x - x0) > self._r:
+                    flag_exception = "RadiusExceeded"
+                    raise My_Exception(flag_exception)
+            except My_Exception as e:
+                print 'My exception occurred: ' + e.value
         # If it doesn't converge after reaching maxiter
         try:
             fx = self._f(x)
             if N.linalg.norm(fx) >= self._tol:
-                flag_exception = "Newton method did not converge after maxiter = " + str(self._maxiter)
+                flag_exception = "NotConvergingAtMaxiter"
                 raise My_Exception(flag_exception)
         except My_Exception as e:
             print 'My exception occurred: ' + e.value

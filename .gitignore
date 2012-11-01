@@ -6,3 +6,5 @@
 learn.py
 
 .DS_Store
+
+*.kate-swp

@@ -59,7 +59,6 @@ class TestNewton(unittest.TestCase):
         solver = newton.Newton(f, maxiter=1000, Df=df)
         x = solver.solve(x0)
         x_sol = N.matrix("3.0; -4.0")
-  
         N.testing.assert_array_almost_equal(x, x_sol)
  
     def testAnalyticalJacobianUsed(self):
@@ -85,7 +84,25 @@ class TestNewton(unittest.TestCase):
         for i in range(2):
             x = solver.solve(x0[i])
             self.assertAlmostEqual(x, x_sol[i])
-       
+            
+    def testRadiusException(self):
+        # Test if radius is excepted, an exception will be raised and passed
+        f = lambda x : 3.0 * x + 6.0
+        df = lambda x : 3.0
+        r = 1
+        solver = newton.Newton(f, tol=1.e-15, maxiter=1, Df=df, r=r)
+        x = solver.solve(2.0)
+        self.assertRaises("RadiusExceeded")        
+    
+    def testRadiusCubeRoot(self):
+        # Test the cube root function for exceeding radius
+        f = lambda x : N.power(x, 1.0/3.0)
+        df = lambda x : 1.0/3.0 * N.power(x, -2.0/3.0)
+        r = 10
+        solver = newton.Newton(f, tol=1.e-15, maxiter=1000, Df=df, r=r)
+        x = solver.solve(1.0)
+        self.assertRaises("RadiusExceeded")     
+        
     @unittest.expectedFailure
     def testInfiniteCycle(self):
         # f(x) = x^3 - 2*x + 2, infinite cycle if x0 = 0
