@@ -56,4 +56,35 @@ class Polynomial_Df(object):
     
     def __call__(self, x):
         return self.Df(x)
+
+class Linear(object):
+    """Callable multi-variable linear system
+    A * x + B = 0"""
+    def __init__(self, A, B):
+        self._A = A
+        self._B = B
+        
+    def __repr__(self):
+        return "Linear(A, B)"
+    
+    def f(self,x):
+        return self._A * x + self._B
+        
+    def __call__(self, x):
+        return self.f(x)
+        
+class Linear_Df(object):
+    """Callable analytical Jacobian of multi-variable linear system
+    For A * x + B = 0, the Jacobian is A"""
+    def __init__(self, A, B):
+        self._A = A
+        self._B = B
+    def __repr__(self):
+        return "Linear_Df(A, B)"
+    
+    def Df(self,x):
+        return self._A
+        
+    def __call__(self, x):
+        return self.Df(x)
         

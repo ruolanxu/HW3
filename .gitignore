@@ -4,3 +4,5 @@
 *.py~
 
 learn.py
+
+.DS_Store
