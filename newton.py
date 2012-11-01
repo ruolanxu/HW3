@@ -5,6 +5,9 @@
 
 import numpy as N
 import functions as F
+# User-defined exception
+class User_Exception(BaseException):
+    pass
 
 class Newton(object):
     def __init__(self, f, tol=1.e-6, maxiter=20, dx=1.e-6):
@@ -26,6 +29,11 @@ class Newton(object):
             if N.linalg.norm(fx) < self._tol:
                 return x
             x = self.step(x, fx)
+        # If it doesn't converge after reaching maxiter
+        fx = self._f(x)
+        if N.linalg.norm(fx) >= self._tol:
+            flag_exception = "Newton method did not converge after maxiter = " + str(self._maxiter)
+            raise User_Exception(flag_exception)
         return x
 
     def step(self, x, fx=None):
@@ -35,4 +43,6 @@ class Newton(object):
             fx = self._f(x)
         Df_x = F.ApproximateJacobian(self._f, x, self._dx)
         h = N.linalg.solve(N.matrix(Df_x), N.matrix(fx))
+        # wrong: return x + h
         return x - h
+
