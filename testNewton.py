@@ -46,18 +46,29 @@ class TestNewton(unittest.TestCase):
         solver._maxiter = solver._maxiter - 1
         x1 = solver.solve(x0)
         self.assertAlmostEqual(x, x1)
+ 
+    def testAnalyticalJacobianUsed(self):
+        # Test if analitical Jacobian is used in Newton
+        f = lambda x : x**2
+        df = lambda x: 2*x
+        x0 = 10.0
+        solver = newton.Newton(f, maxiter=1, Df=df)
+        x = solver.solve(x0)
+        x_analytical = x0 - f(x0) / df(x0)
+        self.assertAlmostEqual(x, x_analytical)
         
-    #@unittest.expectedFailure
-    #def testInfiniteCycle(self):
-        ## f(x) = x^3 - 2*x + 2, infinite cycle if x0 = 0
-        #def f(x):
-            #return x**3 - 2.0 * x + 2.0
-        #solver = newton.Newton(f, maxiter=10000, dx=1e-3)
-        #x0 = 0.0
-        #x = solver.solve(x0)
-        #solver._maxiter = solver._maxiter - 1
-        #x1 = solver.solve(x0)
-        #self.assertAlmostEqual(x, x1)
+    
+    @unittest.expectedFailure
+    def testInfiniteCycle(self):
+        # f(x) = x^3 - 2*x + 2, infinite cycle if x0 = 0
+        def f(x):
+            return x**3 - 2.0 * x + 2.0
+        solver = newton.Newton(f, maxiter=1000, dx=1e-3)
+        x0 = 0.0
+        x = solver.solve(x0)
+        solver._maxiter = solver._maxiter - 1
+        x1 = solver.solve(x0)
+        self.assertAlmostEqual(x, x1)
 
 if __name__ == "__main__":
     unittest.main()
