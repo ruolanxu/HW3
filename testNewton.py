@@ -46,6 +46,23 @@ class TestNewton(unittest.TestCase):
         solver._maxiter = solver._maxiter - 1
         x1 = solver.solve(x0)
         self.assertAlmostEqual(x, x1)
+    
+    def testLinear2D(self):
+        # 2D linear equations
+        A = N.matrix("1.0, 2.0; 3.0, 4.0")
+        B = N.matrix("5.0; 7.0")
+        x0 = N.matrix("0.0; 0.0")
+        self.assertEqual(A.shape[1], x0.shape[0])
+        self.assertEqual(B.shape, x0.shape)
+        def f(x):
+            return A * x + B
+        def df(x):
+            return A        
+        solver = newton.Newton(f, maxiter=1000, Df=df)
+        x = solver.solve(x0)
+        x_sol = N.matrix("3.0; -4.0")
+        for i in range(0, len(x_sol)):
+            self.assertAlmostEqual(x[i], x_sol[i])       
  
     def testAnalyticalJacobianUsed(self):
         # Test if analitical Jacobian is used in Newton

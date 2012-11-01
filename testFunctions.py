@@ -30,6 +30,12 @@ class TestFunctions(unittest.TestCase):
         p = F.Polynomial([1, 2, 3])
         for x in N.linspace(-2,2,11):
             self.assertEqual(p(x), x**2 + 2*x + 3)
+            
+    def testPolynomial_Df(self):
+        # p(x) = x^2 + 2x + 3, test if Polynomial_Df is correct
+        p_Df = F.Polynomial_Df([1, 2, 3])
+        for x in N.linspace(-2,2,11):
+            self.assertEqual(p_Df(x), 2*x + 2)
 
 if __name__ == '__main__':
     unittest.main()
