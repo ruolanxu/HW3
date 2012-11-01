@@ -60,6 +60,16 @@ class TestNewton(unittest.TestCase):
         x = solver.solve(x0)
         x_sol = N.matrix("3.0; -4.0")
         N.testing.assert_array_almost_equal(x, x_sol)
+    
+    def testMaxiterException(self):
+        # f(x) = a* x^2 + b * x + c
+        a, b, c = 2.0, 3.0, -5.0
+        self.assertGreater(b**2-4*a*c, 0)
+        f = F.Polynomial([a, b, c])
+        solver = newton.Newton(f, maxiter=10, dx=1e-3)
+        x0 = 2.0
+        x = solver.solve(x0)
+        self.assertRaises("NotConvergingAtMaxiter")
  
     def testAnalyticalJacobianUsed(self):
         # Test if analitical Jacobian is used in Newton
@@ -99,7 +109,7 @@ class TestNewton(unittest.TestCase):
         f = lambda x : N.power(x, 1.0/3.0)
         df = lambda x : 1.0/3.0 * N.power(x, -2.0/3.0)
         r = 10
-        solver = newton.Newton(f, tol=1.e-15, maxiter=1000, Df=df, r=r)
+        solver = newton.Newton(f, tol=1.e-15, maxiter=10000, Df=df, r=r)
         x = solver.solve(1.0)
         self.assertRaises("RadiusExceeded")     
         
@@ -108,7 +118,7 @@ class TestNewton(unittest.TestCase):
         # f(x) = x^3 - 2*x + 2, infinite cycle if x0 = 0
         def f(x):
             return x**3 - 2.0 * x + 2.0
-        solver = newton.Newton(f, maxiter=1000, dx=1e-3)
+        solver = newton.Newton(f, maxiter=10000, dx=1e-3)
         x0 = 0.0
         x = solver.solve(x0)
         solver._maxiter = solver._maxiter - 1
