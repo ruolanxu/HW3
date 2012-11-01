@@ -1,0 +1,54 @@
+APC Homework #3
+Ruolan Xu
+
+1. Debug original code
+Two bugs were found and corrected:
+    1) In "functions.py" -> "ApproximateJacobian", it didn't divide by dx.
+    2) In "newton.py" -> "Newton.step", should be x-h instead of x+h
+
+2. Add additional tests
+    In "testNewton.py":
+    1) "testSingleStep": test if a single step of Newton is correct
+    2) "testQuadratic": test if a quadratic equation is solved correctly
+    3) "testCos": test whether a typical equation will converge giving a 
+        proper initial value
+    4) "testLinear2D": test solving two linear equations with two variables
+    5) "testInfiniteCycle" (expected failure): test failure for infinite cycle
+    6) "testMaxiterException": test if an exception ("NotConvergingAtMaxiter")
+        will be raised when Newton method does not converge when maxiter is 
+        reached
+                              
+3. Add analytical Jacobian option in class Newton and tests
+    An argument Df is added to class Newton.
+    In "testNewton.py":
+    1) "testAnalyticalJacobianUsed": test if Df is used in Newton solver
+    2) "testQuadraticWithAnalyticalJacobian": test if results are correct for
+        quadratic equation if given analytical Jacobian
+
+    New functions are addd to utilize analytical Jacobian.
+    In "functions.py":
+    1) "Polynomial_Df": returns a function that calculates the analytcal 
+        Jacobian of polynomial functions
+    2) "Linear": returns a function/functions for a linear system Ax + B with
+        multiple variables and equations
+    3) "Linear_Df": returns the analytical Jacobian of a linear system
+    
+    Correspoding tests are added to test these new functions.
+    In "testFunctions.py":
+    1) "testPolynomial_Df": test if Polynomial_Df is correct
+    2) "testLinear": test if linear system works properly
+    3) "testLinear_Df": test if linear Df is correct
+    4) "testPolynomial_Df_accurate": test for a polynomial equation whether 
+        using analytic Jacobian produces the same results as using approximate
+        Jacobian
+
+4. Added a condition with radius
+    In "Newton.py":
+    An argument r is added to class Newton to represent the tolerable distance
+    from x to x0. When ||x-x0||>r, an exception ("RadiusExceeded) is raised.
+    
+    In "testNewton.py":
+    1) "testRadiusException": test if exception is raised due to excedding 
+        radius using a simple lienar equation
+    2) "testRadiusCubeRoot": a special case (cube root) where radius will be
+        exceeded
