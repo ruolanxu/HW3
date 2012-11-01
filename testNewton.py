@@ -54,15 +54,13 @@ class TestNewton(unittest.TestCase):
         x0 = N.matrix("0.0; 0.0")
         self.assertEqual(A.shape[1], x0.shape[0])
         self.assertEqual(B.shape, x0.shape)
-        def f(x):
-            return A * x + B
-        def df(x):
-            return A        
+        f = F.Linear(A, B)
+        df = F.Linear_Df(A, B)     
         solver = newton.Newton(f, maxiter=1000, Df=df)
         x = solver.solve(x0)
         x_sol = N.matrix("3.0; -4.0")
-        for i in range(0, len(x_sol)):
-            self.assertAlmostEqual(x[i], x_sol[i])       
+  
+        N.testing.assert_array_almost_equal(x, x_sol)
  
     def testAnalyticalJacobianUsed(self):
         # Test if analitical Jacobian is used in Newton
@@ -74,7 +72,20 @@ class TestNewton(unittest.TestCase):
         x_analytical = x0 - f(x0) / df(x0)
         self.assertAlmostEqual(x, x_analytical)
         
-    
+    def testQuadraticWithAnalyticalJacobian(self):
+        # f(x) = a* x^2 + b * x + c
+        a, b, c = 2.0, 3.0, -5.0
+        self.assertGreater(b**2-4*a*c, 0)
+        f = F.Polynomial([a, b, c])
+        df = F.Polynomial_Df([a, b, c])
+        solver = newton.Newton(f, maxiter=10000, dx=1e-3, Df=df)
+        x0 = [2.0, -4.5]
+        x_sol = [((-1) * b + N.sqrt(b**2 - 4 * a * c)) / (2.0 * a), 
+                 ((-1) * b - N.sqrt(b**2 - 4 * a * c)) / (2.0 * a)]
+        for i in range(2):
+            x = solver.solve(x0[i])
+            self.assertAlmostEqual(x, x_sol[i])
+       
     @unittest.expectedFailure
     def testInfiniteCycle(self):
         # f(x) = x^3 - 2*x + 2, infinite cycle if x0 = 0
