@@ -38,3 +38,22 @@ class Polynomial(object):
     def __call__(self, x):
         return self.f(x)
 
+class Polynomial_Df(object):
+    """Callable analytical Jacobian of polynomial object
+    For example: for p(x) = ax^2 + bx + c
+    Df = 2ax + b"""
+    def __init__(self, coeffs):
+        self._coeffs = coeffs
+        
+    def __repr__(self):
+        return "Polynomial_Df(%s)" % (", ".join([str(x) for x in self._coeffs]))
+        
+    def Df(self,x):
+        a = self._coeffs[0]
+        b = self._coeffs[1]
+        ans = 2*a*x + b
+        return ans
+    
+    def __call__(self, x):
+        return self.Df(x)
+        
